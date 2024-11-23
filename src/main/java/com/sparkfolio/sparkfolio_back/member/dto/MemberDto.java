@@ -18,5 +18,5 @@ public class MemberDto {
     private String email;
     private String password;
     private String interest;
-    private String profile_photo;
+    private String profilePhoto; // 프로필 사진 URL
 }

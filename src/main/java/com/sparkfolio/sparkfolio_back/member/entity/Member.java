@@ -24,8 +24,8 @@ public class Member extends BaseTimeEntity {
     private String password;
     @Column(length = 30,nullable = false)
     private String interest;
-    @Column(nullable = true)
-    private String profile_photo;
+    @Column(length = 255, nullable = true)
+    private String profilePhoto; // 프로필 사진 URL
 
 
 }
