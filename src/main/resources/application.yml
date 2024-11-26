@@ -1,6 +1,5 @@
 server:
   port: 8080
-
 spring:
   application:
     name: Sparkfolio_Back
@@ -23,7 +22,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true  # ????? ???? ??
@@ -43,3 +42,5 @@ logging:
         type:
           descriptor:
             sql: trace
+
+

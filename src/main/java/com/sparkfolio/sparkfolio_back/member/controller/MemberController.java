@@ -2,15 +2,13 @@ package com.sparkfolio.sparkfolio_back.member.controller;
 
 import com.sparkfolio.sparkfolio_back.member.dto.LoginRequestDto;
 import com.sparkfolio.sparkfolio_back.member.dto.MemberDto;
+import com.sparkfolio.sparkfolio_back.member.entity.Member;
 import com.sparkfolio.sparkfolio_back.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,15 +39,24 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
+
     // 로그인 API
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto, HttpSession session) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequestDto loginRequestDto, HttpSession session) {
         boolean isAuthenticated = memberService.authenticate(loginRequestDto);
         if (isAuthenticated) {
-            session.setAttribute("user", loginRequestDto.getEmail()); // 세션에 사용자 정보 저장
-            return ResponseEntity.ok("로그인 성공!");
+            Member member = memberService.getMemberByEmail(loginRequestDto.getEmail()); // 사용자 정보 가져오기
+            session.setAttribute("user", member.getEmail()); // 세션에 이메일 저장
+
+            // 필요한 사용자 정보 반환
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "로그인 성공!");
+            response.put("userData", new MemberDto(member)); // MemberDto로 변환 후 반환
+
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(401).body("로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.");
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다."));
         }
     }
 
@@ -57,6 +64,17 @@ public class MemberController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         session.invalidate(); // 세션 무효화
-        return ResponseEntity.ok("로그아웃 성공!");
+        return ResponseEntity.ok("로그아웃 성공");
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<MemberDto> getProfile(HttpSession session) {
+        String userEmail = (String) session.getAttribute("user");
+        if (userEmail == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        MemberDto memberDto = memberService.getMemberProfile(userEmail);
+        return ResponseEntity.ok(memberDto);
     }
 }
