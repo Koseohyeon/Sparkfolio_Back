@@ -26,6 +26,9 @@
                     .interest(memberDto.getInterest())
                     .profilePhoto(memberDto.getProfilePhoto())
                     .build();
+            if (memberRepository.findByEmail(memberDto.getEmail()).isPresent()) {
+                throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            }
 
             memberRepository.save(member);
         }
@@ -61,4 +64,16 @@
                     .build();
         }
 
+        public void updateMember(String email, MemberDto updatedInfo) {
+            // 이메일을 기반으로 사용자 검색
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+            // 사용자 정보 업데이트
+            member.setName(updatedInfo.getName());
+            member.setInterest(updatedInfo.getInterest());
+
+            // 저장된 데이터베이스 업데이트
+            memberRepository.save(member);
+        }
     }

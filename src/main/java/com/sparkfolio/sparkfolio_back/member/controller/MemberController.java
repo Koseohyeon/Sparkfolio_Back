@@ -67,6 +67,7 @@ public class MemberController {
         return ResponseEntity.ok("로그아웃 성공");
     }
 
+    //사용자 정보 가져오기
     @GetMapping("/profile")
     public ResponseEntity<MemberDto> getProfile(HttpSession session) {
         String userEmail = (String) session.getAttribute("user");
@@ -77,4 +78,22 @@ public class MemberController {
         MemberDto memberDto = memberService.getMemberProfile(userEmail);
         return ResponseEntity.ok(memberDto);
     }
+   //사용자 업데이트
+   // 사용자 정보 수정 API
+   // 사용자 정보 수정 API
+   @PutMapping("/update")
+   public ResponseEntity<Object> updateProfile(@RequestBody MemberDto updatedInfo, HttpSession session) {
+       String userEmail = (String) session.getAttribute("user");
+       if (userEmail == null) {
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+       }
+
+       try {
+           // 회원 정보 업데이트 처리
+           memberService.updateMember(userEmail, updatedInfo);
+           return ResponseEntity.ok("회원 정보가 성공적으로 수정되었습니다.");
+       } catch (Exception e) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 정보 수정 실패: " + e.getMessage());
+       }
+   }
 }

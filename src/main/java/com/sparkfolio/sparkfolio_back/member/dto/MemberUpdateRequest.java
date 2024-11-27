@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberRequest {
+public class MemberUpdateRequest {
     private String name;
     private String interest;
 }
