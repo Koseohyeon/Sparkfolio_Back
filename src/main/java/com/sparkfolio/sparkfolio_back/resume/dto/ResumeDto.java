@@ -1,9 +1,6 @@
 package com.sparkfolio.sparkfolio_back.resume.dto;
 
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -12,9 +9,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ResumeDto {
-    private String author;
-    private String title;
-    private String memo;
-    private List<String> categories; // 여러 카테고리 지원
-    private MultipartFile resumeFile; // 업로드할 파일
+
+    private String title; // 제목
+    private String category; // 카테고리
+    private String memo; // 메모
+    private String fileUrl; // 파일 URL
+    private String authorEmail; // 작성자 이메일
 }

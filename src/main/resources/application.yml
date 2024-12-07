@@ -35,6 +35,14 @@ spring:
     user:
       name: test
       password: 1234
+  servlet:
+    multipart:
+      enabled: true  # 멀티파트 업로드 활성화
+      max-request-size: 10MB
+      max-file-size: 10MB
+    # 파일 업로드 설정
+    file:
+      saveDir: C:/shop/item #서버의 내부에서 사용할 경로(파일 저장)
 logging:
   level:
     org:
