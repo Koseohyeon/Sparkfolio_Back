@@ -1,5 +1,6 @@
 package com.sparkfolio.sparkfolio_back.resume.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sparkfolio.sparkfolio_back.common.entity.BaseTimeEntity;
 import com.sparkfolio.sparkfolio_back.member.entity.Member;
 import jakarta.persistence.*;
@@ -32,6 +33,7 @@ public class Resume extends BaseTimeEntity {
     private String fileUrl; // 이력서 파일 URL
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference // 순환 참조 방지
     @JoinColumn(name = "member_id", nullable = false)
     private Member author; // 이력서를 작성한 사용자
 }

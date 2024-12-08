@@ -1,5 +1,6 @@
 package com.sparkfolio.sparkfolio_back.resume.controller;
 
+import com.sparkfolio.sparkfolio_back.resume.dto.ResumeDto;
 import com.sparkfolio.sparkfolio_back.resume.entity.Resume;
 import com.sparkfolio.sparkfolio_back.resume.service.ResumeService;
 import jakarta.servlet.http.HttpSession;
@@ -39,13 +40,17 @@ public class ResumeController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<Resume>> getResumeList(HttpSession session) {
+    public ResponseEntity<Object> getResumeList(HttpSession session) {
         String userEmail = (String) session.getAttribute("user");
         if (userEmail == null) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
 
-        List<Resume> resumes = resumeService.getResumesByAuthor(userEmail);
-        return ResponseEntity.ok(resumes);
+        try {
+            List<ResumeDto> resumes = resumeService.getResumesByUserEmail(userEmail);
+            return ResponseEntity.ok(resumes);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("이력서 리스트 불러오기 실패: " + e.getMessage());
+        }
     }
 }

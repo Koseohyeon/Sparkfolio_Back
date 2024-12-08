@@ -15,4 +15,7 @@ public class ResumeDto {
     private String memo; // 메모
     private String fileUrl; // 파일 URL
     private String authorEmail; // 작성자 이메일
+    private String date;
+
+
 }
