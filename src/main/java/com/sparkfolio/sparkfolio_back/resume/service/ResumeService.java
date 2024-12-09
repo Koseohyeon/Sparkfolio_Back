@@ -26,8 +26,8 @@
         @Value("${spring.servlet.file.saveDir}")
         private String saveDir; // 파일 저장 경로
 
-        public Resume uploadResume(String userEmail, String title, String category, String memo, MultipartFile file) throws IOException {
-            Member author = memberRepository.findByEmail(userEmail)
+        public Resume uploadResume(Long id, String email, String title, String category, String memo, MultipartFile file) throws IOException {
+            Member author = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
             validateFile(file); // 파일 검증
@@ -46,8 +46,9 @@
             // 파일 저장
             file.transferTo(targetFile);
 
-            // 이력서 저장
+            // 새로운 이력서를 생성하고 id를 설정하지 않음
             Resume resume = Resume.builder()
+                    .id(id)
                     .title(title)
                     .category(category)
                     .memo(memo)
@@ -57,6 +58,7 @@
 
             return resumeRepository.save(resume);
         }
+
 
         private void validateFile(MultipartFile file) {
             String originalFilename = file.getOriginalFilename();
@@ -87,13 +89,34 @@
             String formattedDate = resume.getRegTime() != null ? resume.getRegTime().format(formatter) : null;
 
             return ResumeDto.builder()
+                    .id(resume.getId())
                     .title(resume.getTitle())
                     .category(resume.getCategory())
                     .memo(resume.getMemo())
                     .fileUrl(resume.getFileUrl())
-                    .authorEmail(resume.getAuthor().getEmail())
+                    .author(resume.getAuthor().getEmail())
                     .date(formattedDate) // 포맷된 날짜 문자열
                     .build();
         }
+        //이력력서 업데이트
+        public void updateResume(Long id, ResumeDto resumeDto, String userEmail) {
+            // 사용자를 이메일을 통해 가져오기
+            Member author = memberRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+            // id를 통해 기존 이력서를 가져오기
+            Resume resume = resumeRepository.findByIdAndAuthor(id, author)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 이력서를 찾을 수 없습니다."));
+
+            // 엔티티를 업데이트
+            resume.setTitle(resumeDto.getTitle());
+            resume.setCategory(resumeDto.getCategory());
+            resume.setMemo(resumeDto.getMemo());
+            resume.setFileUrl(resumeDto.getFileUrl());
+
+            // 엔티티를 저장하여 업데이트 적용
+            resumeRepository.save(resume);
+        }
+
 
     }

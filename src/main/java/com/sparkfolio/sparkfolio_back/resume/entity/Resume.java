@@ -32,6 +32,6 @@ public class Resume extends BaseTimeEntity {
     private String fileUrl; // 이력서 파일 URL
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+   @JoinColumn(name = "member_id",nullable = false)
     private Member author;
 }
